@@ -40,9 +40,14 @@ impl<T: SearchQueryBuilder> Where<T> {
     /// if the condition is satisfied. For the opposite effect see
     /// `not_beyond()`.
     ///
-    /// NOTE: This condition applies to the starting element as well.
-    /// A common issue is that the starting element is not followed
-    /// as it may not pass this condition.
+    /// NOTE: This modifier only controls traversal (whether the search
+    /// continues past an element). It does not affect which elements
+    /// are selected by the conditions.
+    ///
+    /// Also note that `beyond()` does not block traversal from the
+    /// starting element at distance 0; it only affects whether the
+    /// search continues past elements where the modified condition
+    /// is evaluated.
     ///
     /// # Examples
     ///
@@ -50,7 +55,8 @@ impl<T: SearchQueryBuilder> Where<T> {
     /// use agdb::QueryBuilder;
     ///
     /// // Only elements with `k` key will be followed during search.
-    /// QueryBuilder::search().from(1).where_().beyond().keys("k").query();
+    /// // The neighbor() condition selects the right elements.
+    /// QueryBuilder::search().from(1).where_().neighbor().and().beyond().keys("k").query();
     ///
     /// // Only edges or nodes with exactly 1 edge are followed.
     /// QueryBuilder::search().from(1).where_().beyond().edge().or().edge_count(1);
@@ -315,6 +321,9 @@ impl<T: SearchQueryBuilder> Where<T> {
     /// that the search will NOT continue beyond current element only
     /// if the condition IS satisfied. For the opposite effect see
     /// `beyond()`.
+    ///
+    /// NOTE: This modifier only controls traversal (whether the search
+    /// stops at an element). It does not affect element selection.
     ///
     /// # Examples
     ///
